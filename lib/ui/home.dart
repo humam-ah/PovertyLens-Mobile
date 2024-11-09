@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'pindai.dart';
 import 'lembaga.dart';
+import 'rekap_data.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,22 +13,43 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeScreenContent(),
-    PindaiScreen(),
-    Navigator(
-      key: GlobalKey<NavigatorState>(), // Key baru untuk Navigator ini
-      onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute(
-          builder: (context) => LembagaScreen(), // Halaman awal dalam navigator khusus ini
-        );
-      },
-    ), // LembagaScreen akan memuat navigasi ke halaman detail
-  ];
+  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _lembagaNavigatorKey = GlobalKey<NavigatorState>();
+
+  final List<Widget> _pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pages.addAll([
+      Navigator(
+        key: _homeNavigatorKey,
+        onGenerateRoute: (settings) {
+          if (settings.name == '/')
+            return MaterialPageRoute(builder: (context) => HomeScreenContent());
+          if (settings.name == '/rekap_data')
+            return MaterialPageRoute(builder: (context) => RekapDataScreen());
+          return null;
+        },
+      ),
+      PindaiScreen(),
+      Navigator(
+        key: _lembagaNavigatorKey,
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(builder: (context) => LembagaScreen());
+        },
+      ),
+    ]);
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 0) {
+        _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      } else if (index == 2) {
+        _lembagaNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      }
     });
   }
 
@@ -91,74 +113,80 @@ class HomeScreenContent extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.green[200],
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              padding: const EdgeInsets.all(16.0),
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Data Index Kemiskinan',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: 100,
-                        barTouchData: BarTouchData(enabled: false),
-                        titlesData: FlTitlesData(
-                          show: true,
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (double value, TitleMeta meta) {
-                                const months = [
-                                  'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 
-                                  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-                                ];
-                                return Text(months[value.toInt()]);
-                              },
-                              reservedSize: 30,
-                            ),
-                          ),
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 40,
-                              getTitlesWidget: (double value, TitleMeta meta) {
-                                return Text('${value.toInt()}%');
-                              },
-                            ),
-                          ),
-                        ),
-                        gridData: FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
-                        barGroups: List.generate(12, (index) {
-                          final yValue = (index + 1) * 7 % 100; 
-                          return BarChartGroupData(
-                            x: index,
-                            barRods: [
-                              BarChartRodData(
-                                toY: yValue.toDouble(),
-                                color: Colors.orange,
-                                width: 16,
-                                borderRadius: BorderRadius.circular(4),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed('/rekap_data');
+              },
+              child: Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.green[200],
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      'Data Index Kemiskinan',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: 100,
+                          barTouchData: BarTouchData(enabled: false),
+                          titlesData: FlTitlesData(
+                            show: true,
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (double value, TitleMeta meta) {
+                                  const months = [
+                                    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 
+                                    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+                                  ];
+                                  return Text(months[value.toInt()]);
+                                },
+                                reservedSize: 30,
                               ),
-                            ],
-                          );
-                        }),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 40,
+                                getTitlesWidget: (double value, TitleMeta meta) {
+                                  return Text('${value.toInt()}%');
+                                },
+                              ),
+                            ),
+                          ),
+                          gridData: FlGridData(show: false),
+                          borderData: FlBorderData(show: false),
+                          barGroups: List.generate(12, (index) {
+                            final yValue = (index + 1) * 7 % 100; 
+                            return BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: yValue.toDouble(),
+                                  color: Colors.orange,
+                                  width: 16,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 20),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'ui/home.dart';
-import 'ui/pindai.dart';
 
 void main() {
   runApp(MyApp());

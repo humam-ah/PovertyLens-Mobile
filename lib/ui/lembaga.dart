@@ -118,7 +118,6 @@ class _LembagaScreenState extends State<LembagaScreen> {
                 itemBuilder: (context, index) {
                   final lembaga = _filteredLembagaList[index];
                   return GestureDetector(
-                    // Di dalam onTap dari item lembaga pada GridView di LembagaScreen
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
