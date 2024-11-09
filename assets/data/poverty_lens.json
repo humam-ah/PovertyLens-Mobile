@@ -1,0 +1,29 @@
+[
+{"type":"header","version":"5.2.0","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"poverty_lens"},
+{"type":"table","name":"detail_lembaga","database":"poverty_lens","data":
+[
+{"id":"1","lembaga_id":"1","alamat_kantor":"Jl. Kuningan Barat No. 1, Jakarta","telepon":"021-12345678","email":"info@baznas.go.id","web_resmi":"https:\/\/baznas.go.id","deskripsi":"Badan Amil Zakat Nasional","informasi":"Informasi tambahan tentang BAZNAS"},
+{"id":"2","lembaga_id":"2","alamat_kantor":"Jl. Salemba Raya No. 28, Jakarta","telepon":"021-23456789","email":"kontak@kemensos.go.id","web_resmi":"https:\/\/kemensos.go.id","deskripsi":"Kementerian Sosial RI","informasi":"Informasi tambahan tentang Kementerian Sosial"},
+{"id":"3","lembaga_id":"3","alamat_kantor":"Jl. Medan Merdeka Barat No. 3, Jakarta","telepon":"021-34567890","email":"info@lman.go.id","web_resmi":"https:\/\/lman.go.id","deskripsi":"Lembaga Mangrove Aset Negara","informasi":"Informasi tambahan tentang LMAN"}
+]
+}
+,{"type":"table","name":"lembaga","database":"poverty_lens","data":
+[
+{"id":"1","nama":"Baznas","logo_url":"images\/lembaga\/baznas.png"},
+{"id":"2","nama":"Kementerian Sosial","logo_url":"images\/lembaga\/kemensos.png"},
+{"id":"3","nama":"LMAN","logo_url":"images\/lembaga\/lman.png"},
+{"id":"4","nama":"PIP","logo_url":"images\/lembaga\/pip.png"},
+{"id":"5","nama":"BNPB","logo_url":"images\/lembaga\/bnpb.png"},
+{"id":"6","nama":"Dinas Sosial","logo_url":"images\/lembaga\/baznas.png"},
+{"id":"7","nama":"RTLH","logo_url":"images\/lembaga\/baznas.png"},
+{"id":"8","nama":"Puskesmas","logo_url":"images\/lembaga\/puskesmas.png"},
+{"id":"9","nama":"Dinas Pendidikan","logo_url":"images\/lembaga\/pip.png"},
+{"id":"10","nama":"Dompet Duafa","logo_url":"images\/lembaga\/dompet-dhuafa.png"},
+{"id":"11","nama":"ACT","logo_url":"images\/lembaga\/act.png"},
+{"id":"12","nama":"Wahana Visi Indonesia","logo_url":"images\/lembaga\/wahana-visi.png"},
+{"id":"13","nama":"UNDP","logo_url":"images\/lembaga\/undp.png"},
+{"id":"14","nama":"WFP","logo_url":"images\/lembaga\/wfp.png"}
+]
+}
+]
