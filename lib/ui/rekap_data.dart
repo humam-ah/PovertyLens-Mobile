@@ -54,37 +54,13 @@ class RekapDataScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: [
-                    DataColumn(label: Text('Wilayah Inflasi')),
-                    DataColumn(label: Text('Garis Kemiskinan (Rp/Kapita/Bulan)')),
-                    DataColumn(label: Text('2021')),
-                    DataColumn(label: Text('2022')),
-                    DataColumn(label: Text('2023')),
-                  ],
-                  rows: [
-                    DataRow(cells: [
-                      DataCell(Text('Kota Tegal')),
-                      DataCell(Text('523.413,000')),
-                      DataCell(Text('565.826,000')),
-                      DataCell(Text('565.826,000')),
-                      DataCell(Text('565.826,000')),
-                    ]),
-                    DataRow(cells: [
-                      DataCell(Text('Jawa Tengah')),
-                      DataCell(Text('409.193,000')),
-                      DataCell(Text('438.833,000')),
-                      DataCell(Text('438.833,000')),
-                      DataCell(Text('438.833,000')),
-                    ]),
-                    // Tambahkan lebih banyak DataRow sesuai dengan data Anda
-                  ],
-                ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Image.asset(
+                'images/table.png',
+                fit: BoxFit.contain
               ),
-            ),
+            ),   
           ],
         ),
       ),
