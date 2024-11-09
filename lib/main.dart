@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PovertyLens',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(), // Atur SplashScreen sebagai halaman utama
+      home: SplashScreen(), 
     );
   }
 }
