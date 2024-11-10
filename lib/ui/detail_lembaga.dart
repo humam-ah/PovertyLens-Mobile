@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:poverty_lens/temp/background.dart';
 
 class DetailLembagaScreen extends StatefulWidget {
   final String lembagaId;
@@ -60,56 +61,58 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    '${widget.logoUrl}',
-                    height: 80,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    widget.lembagaName,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16),
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.pink[50],
-                      borderRadius: BorderRadius.circular(8),
+      body: CustomBackground(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      '${widget.logoUrl}',
+                      height: 80,
                     ),
-                    child: Text(
-                      _lembagaDetail?['deskripsi'] ?? 'Deskripsi tidak tersedia',
+                    SizedBox(height: 16),
+                    Text(
+                      widget.lembagaName,
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
+                    SizedBox(height: 16),
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.pink[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _lembagaDetail?['deskripsi'] ?? 'Deskripsi tidak tersedia',
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Alamat Kantor: ${_lembagaDetail?['alamat_kantor'] ?? 'Tidak tersedia'}"),
-                        Text("Telepon: ${_lembagaDetail?['telepon'] ?? 'Tidak tersedia'}"),
-                        Text("Email: ${_lembagaDetail?['email'] ?? 'Tidak tersedia'}"),
-                        Text("Website Resmi: ${_lembagaDetail?['web_resmi'] ?? 'Tidak tersedia'}"),
-                      ],
+                    SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Alamat Kantor: ${_lembagaDetail?['alamat_kantor'] ?? 'Tidak tersedia'}"),
+                          Text("Telepon: ${_lembagaDetail?['telepon'] ?? 'Tidak tersedia'}"),
+                          Text("Email: ${_lembagaDetail?['email'] ?? 'Tidak tersedia'}"),
+                          Text("Website Resmi: ${_lembagaDetail?['web_resmi'] ?? 'Tidak tersedia'}"),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

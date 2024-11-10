@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:poverty_lens/temp/background.dart';
 import 'detail_lembaga.dart';
 
 class LembagaScreen extends StatefulWidget {
@@ -103,64 +104,66 @@ class _LembagaScreenState extends State<LembagaScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 3,
-                ),
-                itemCount: _filteredLembagaList.length,
-                itemBuilder: (context, index) {
-                  final lembaga = _filteredLembagaList[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailLembagaScreen(
-                            lembagaId: lembaga['id'],
-                            lembagaName: lembaga['nama'],
-                            logoUrl: lembaga['logo_url'],
+      body: CustomBackground(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 3,
+                  ),
+                  itemCount: _filteredLembagaList.length,
+                  itemBuilder: (context, index) {
+                    final lembaga = _filteredLembagaList[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DetailLembagaScreen(
+                              lembagaId: lembaga['id'],
+                              lembagaName: lembaga['nama'],
+                              logoUrl: lembaga['logo_url'],
+                            ),
+                          ),
+                        );
+                      },
+        
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                '${lembaga['logo_url']}', 
+                                height: 40,
+                                width: 40,
+                                fit: BoxFit.contain,
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  lembaga['nama'],
+                                  style: TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              '${lembaga['logo_url']}', 
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.contain,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                lembaga['nama'],
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
+      ),
     );
   }
 }
