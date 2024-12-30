@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:poverty_lens/temp/background.dart';
 
 class HasilPindaiScreen extends StatelessWidget {
   @override
@@ -17,8 +16,7 @@ class HasilPindaiScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
-      body: CustomBackground(
-        child: Padding(
+      body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +69,6 @@ class HasilPindaiScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:poverty_lens/temp/background.dart';
 import 'detail_lembaga.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class LembagaScreen extends StatefulWidget {
+  final http.Client? httpClient;
+
+  LembagaScreen({this.httpClient});
+
   @override
   _LembagaScreenState createState() => _LembagaScreenState();
 }
 
 class _LembagaScreenState extends State<LembagaScreen> {
+  late http.Client _client;
   List<dynamic> _lembagaList = [];
   List<dynamic> _filteredLembagaList = [];
   bool _isLoading = true;
@@ -18,26 +23,30 @@ class _LembagaScreenState extends State<LembagaScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchLembagaData();
+    _client = widget.httpClient ?? http.Client();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchLembagaData();
+    });
   }
 
   Future<void> _fetchLembagaData() async {
-    final url = Uri.parse('http://localhost:8000/3'); 
+    final url = Uri.parse(
+        'http://127.0.0.1:5000/lembaga'); 
     try {
-      final response = await http.get(url);
+      final response = await (widget.httpClient ?? http.Client()).get(url);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          _lembagaList = data['data'];
-          _filteredLembagaList = _lembagaList; 
+          _lembagaList = data;
+          _filteredLembagaList = _lembagaList;
           _isLoading = false;
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error fetching data: $e');
     }
   }
 
@@ -88,30 +97,44 @@ class _LembagaScreenState extends State<LembagaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(25, 254, 1, 84),
-        title: Text(
-          'Daftar Lembaga',
-          style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              icon: Icon(Icons.search, color: Colors.black),
-              onPressed: _showSearchDialog,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          toolbarHeight: 60,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(24),
+          )),
+          backgroundColor: Color.fromARGB(255, 208, 232, 197),
+          title: Text(
+            'Daftar Lembaga',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: IconButton(
+                icon: Icon(Icons.search, color: Colors.black),
+                onPressed: _showSearchDialog,
+              ),
+            ),
+          ],
+        ),
       ),
-      body: CustomBackground(
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     childAspectRatio: 3,
@@ -124,35 +147,51 @@ class _LembagaScreenState extends State<LembagaScreen> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => DetailLembagaScreen(
-                              lembagaId: lembaga['id'],
+                              lembagaId: lembaga['id'].toString(),
                               lembagaName: lembaga['nama'],
                               logoUrl: lembaga['logo_url'],
                             ),
                           ),
                         );
                       },
-        
                       child: Card(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Image.asset(
-                                '${lembaga['logo_url']}', 
-                                height: 40,
-                                width: 40,
-                                fit: BoxFit.contain,
+                              Container(
+                                margin: EdgeInsets.only(left: 8),
+                                width: 60,
+                                height: 60,
+                                color: Color.fromARGB(255, 217, 217, 217),
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                    '${lembaga['logo_url']}',
+                                      // 'http://phbtegal.com:5013${lembaga['logo_url']}',
+                                  height: 16,
+                                  width: 16,
+                                  fit: BoxFit.contain,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                child: Text(
-                                  lembaga['nama'],
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.ellipsis,
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      lembaga['nama'],
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -160,10 +199,8 @@ class _LembagaScreenState extends State<LembagaScreen> {
                         ),
                       ),
                     );
-                  },
-                ),
-              ),
-      ),
+                  }),
+            ),
     );
   }
 }

@@ -32,8 +32,8 @@ dependencies:
     sdk: flutter
   http: ^0.13.5
   flutter_svg: ^1.0.3
-  flutter_map: 3.0.0
-  latlong2: ^0.8.1
+  flutter_map: ^4.0.0
+  latlong2: ^0.8.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -41,9 +41,22 @@ dependencies:
   cupertino_icons: ^1.0.8
   fl_chart: ^0.69.0
   flutter_launcher_icons: ^0.14.1
+  cached_network_image: ^3.3.1
+  integration_test:
+    sdk: flutter
+  infinite_carousel: ^1.1.1
+  carousel_slider: ^5.0.0
+  mysql1: ^0.20.0
+  test: ^1.25.7
+  mockito: ^5.4.4
+  http_mock_adapter: ^0.6.1
+  dio: ^5.7.0
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.5
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -71,27 +84,29 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/logo-text.svg
-    - images/map.png
-    - images/graph.svg
-    - images/logo-color.png
-    - images/table.png
-    - images/logo.svg
-    - images/logo.png
-    - images/lembaga/act.png
-    - images/lembaga/baznas.png
-    - images/lembaga/bnpb.png
-    - images/lembaga/dompet-dhuafa.png
-    - images/lembaga/kemensos.jpg
-    - images/lembaga/kemensos.png
-    - images/lembaga/lman.png
-    - images/lembaga/pip.png
-    - images/lembaga/pkk.png
-    - images/lembaga/puskesmas.png
-    - images/lembaga/undp-logo.webp
-    - images/lembaga/undp.png
-    - images/lembaga/wahana-visi.png
-    - images/lembaga/wfp.png
+    - assets/images/logo.svg
+    - assets/ssl/isrgrootx1.pem
+    - static/images/logo-text.svg
+    - static/images/map.png
+    - static/images/graph.svg
+    - static/images/logo-color.png
+    - static/images/table.png
+    - static/images/logo.svg
+    - static/images/logo.png
+    - static/images/lembaga/act.png
+    - static/images/lembaga/baznas.png
+    - static/images/lembaga/bnpb.png
+    - static/images/lembaga/dompet-dhuafa.png
+    - static/images/lembaga/kemensos.jpg
+    - static/images/lembaga/kemensos.png
+    - static/images/lembaga/lman.png
+    - static/images/lembaga/pip.png
+    - static/images/lembaga/pkk.png
+    - static/images/lembaga/puskesmas.png
+    - static/images/lembaga/undp-logo.webp
+    - static/images/lembaga/undp.png
+    - static/images/lembaga/wahana-visi.png
+    - static/images/lembaga/wfp.png
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg
 
