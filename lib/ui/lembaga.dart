@@ -31,9 +31,12 @@ class _LembagaScreenState extends State<LembagaScreen> {
 
   Future<void> _fetchLembagaData() async {
     final url = Uri.parse(
-        'http://127.0.0.1:5000/lembaga'); 
+        'https://sound-prompt-crawdad.ngrok-free.app/lembaga'); 
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -44,6 +47,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
         });
       } else {
         print('Failed to load data: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error fetching data: $e');

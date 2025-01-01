@@ -4,16 +4,27 @@ class HasilPindaiScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(25, 254, 1, 84),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'PovertyLens AI Menjawab',
-          style: TextStyle(color: Colors.black, fontSize: 16),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          toolbarHeight: 60,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(24),
+            )
+          ),
+          backgroundColor: Color.fromARGB(255, 208, 232, 197),
+          title: Text(
+            'PovertyAnswer',
+            style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
       body: Padding(

@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchKemiskinanData() async {
-    final url = Uri.parse('http://127.0.0.1:5000/api/data-kemiskinan');
+    final url = Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/api/data-kemiskinan');
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
 
@@ -111,13 +111,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       extendBody: true,
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: isLandscape
+        ? null 
+        : Container(
         height: 56,
         margin: EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -433,7 +436,7 @@ class HomeScreenContent extends StatelessWidget {
                             backgroundColor: Colors.white,
                             radius: 30,
                             child: Image.asset(
-                              'images/logo.png',
+                              'static/images/logo.png',
                               width: 45,
                               height: 45,
                               fit: BoxFit.contain,
