@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -7,18 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
-
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
   _MapScreenState createState() => _MapScreenState();
-}
+} 
 
 class _MapScreenState extends State<MapScreen> {
-  GlobalKey _mapKey = GlobalKey();
+  final GlobalKey _mapKey = GlobalKey();
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -37,129 +37,87 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  Future<void> _captureMap() async {
+  Future<void> _captureAndProcessMap() async {
+    setState(() {
+      _isProcessing = true;
+    });
+
     try {
+      // Tangkap peta sebagai gambar
       RenderRepaintBoundary boundary =
           _mapKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
 
-      if (boundary != null) {
-        ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-        ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-        Uint8List pngBytes = byteData!.buffer.asUint8List();
+      print('a');
 
-        String base64Image = base64Encode(pngBytes);
-
-        await _sendImageToBackend(base64Image);
-
-        // Simpan gambar ke file lokal
-        final directory = await getApplicationDocumentsDirectory();
-        final filePath = '${directory.path}/map_screenshot.png';
-        File file = File(filePath);
-        await file.writeAsBytes(pngBytes);
-
-        // Berikan feedback bahwa tangkapan layar berhasil
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Map berhasil disimpan di $filePath')),
-        );
-      }
-    } catch (e) {
-      print('Error capturing map: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menangkap map')),
+      // Kompres gambar sebelum dikirim
+      Uint8List? compressedImage = await FlutterImageCompress.compressWithList(
+        pngBytes,
+        quality: 70, // Ubah kualitas gambar (0-100)
       );
-    }
-  }
 
-  Future<void> _sendImageToBackend(String base64Image) async {
-    final url = Uri.parse("https://sound-prompt-crawdad.ngrok-free.app/process");
+      print('b');
 
-    try {
+      String base64Image = base64Encode(compressedImage);
+
+      print('c');
+
+      // Kirim gambar ke backend untuk diproses
       final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          "image": base64Image,
-        },
+        // Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/process'),
+        Uri.parse('http://127.0.0.1:5000/process'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {'image': 'data:image/png;base64,$base64Image'},
       );
-      print('Sending request to: $url');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data["error"] != null) {
-          throw Exception(data["error"]);
-        }
+        final Map<String, dynamic> result = json.decode(response.body);
 
-        // Tampilkan hasil overlay dan persentase
-        _showResult(data);
+        // Contoh tambahan untuk kelurahan (jika diperlukan)
+        result['kelurahan'] = 'Contoh Kelurahan';
+
+        // Kembali ke layar sebelumnya dengan hasil
+        Navigator.pop(context, result);
       } else {
-        throw Exception("Gagal mengirim gambar: ${response.statusCode}");
+        throw Exception('Gagal memproses gambar: ${response.statusCode}');
       }
     } catch (e) {
-      print("Error sending image to backend: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memproses gambar')),
+        SnackBar(content: Text('Gagal memproses gambar: $e')),
       );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
-  }
-
-  void _showResult(Map<String, dynamic> data) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Hasil Proses Gambar"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.memory(
-                  base64Decode(data["overlay_image"]),
-                  width: 300,
-                  height: 300,
-                ),
-                SizedBox(height: 20),
-                ...data["percentages"].entries.map((entry) {
-                  final category = entry.key;
-                  final percentage = entry.value;
-                  return Text("$category: ${percentage.toStringAsFixed(2)}%");
-                }).toList(),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Tutup"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
           elevation: 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          title: const Text(
             'PovertyMaps',
-            style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -168,17 +126,17 @@ class _MapScreenState extends State<MapScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 20,),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Ambil Wilayah yang ingin di Capture',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               RepaintBoundary(
                 key: _mapKey,
                 child: Container(
                   width: 400,
-                  height: 300,
+                  height: 200,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 2),
                     borderRadius: BorderRadius.circular(10),
@@ -198,8 +156,9 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        subdomains: ['a', 'b', 'c'],
+                        urlTemplate:
+                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        subdomains: const ['a', 'b', 'c'],
                       ),
                       MarkerLayer(
                         markers: [
@@ -207,7 +166,7 @@ class _MapScreenState extends State<MapScreen> {
                             point: LatLng(-6.858944, 109.147861),
                             width: 40,
                             height: 40,
-                            builder: (context) => Icon(
+                            builder: (context) => const Icon(
                               Icons.location_on,
                               color: Colors.red,
                               size: 30,
@@ -219,20 +178,20 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _captureMap,
-                child: Text('Capture Map'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+              if (_isProcessing)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: CircularProgressIndicator(),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: _isProcessing ? null : _captureAndProcessMap,
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: const Text("Capture dan Proses"),
                 ),
               ),
-              SizedBox(height: 20,),
             ],
           ),
         ),

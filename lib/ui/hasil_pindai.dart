@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 
 class HasilPindaiScreen extends StatelessWidget {
+  const HasilPindaiScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
           elevation: 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
               bottom: Radius.circular(24),
             )
           ),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          title: const Text(
             'PovertyAnswer',
             style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -38,15 +40,15 @@ class HasilPindaiScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage('images/map.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -56,11 +58,11 @@ class HasilPindaiScreen extends StatelessWidget {
                       color: Colors.grey.withOpacity(0.3),
                       spreadRadius: 2,
                       blurRadius: 6,
-                      offset: Offset(2, 4),
+                      offset: const Offset(2, 4),
                     ),
                   ],
                 ),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

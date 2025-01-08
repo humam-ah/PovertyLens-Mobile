@@ -49,7 +49,7 @@ void main() {
         (WidgetTester tester) async {
       await tester
           .pumpWidget(MaterialApp(home: LembagaScreen(httpClient: mockClient)));
-      await tester.pumpAndSettle(Duration(seconds: 10));
+      await tester.pumpAndSettle(const Duration(seconds: 10));
 
       expect(find.byType(Card), findsNWidgets(2));
     });

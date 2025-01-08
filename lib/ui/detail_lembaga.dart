@@ -8,8 +8,8 @@ class DetailLembagaScreen extends StatefulWidget {
   final String lembagaName;
   final String logoUrl;
 
-  DetailLembagaScreen(
-      {required this.lembagaId,
+  const DetailLembagaScreen(
+      {super.key, required this.lembagaId,
       required this.lembagaName,
       required this.logoUrl});
 
@@ -31,6 +31,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
     print(
         'Memuat detail untuk lembaga ID: ${widget.lembagaId}'); // Log ID lembaga
     final url =
+        // Uri.parse('http://127.0.0.1:5000/detail-lembaga/${widget.lembagaId}');
         Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/detail-lembaga/${widget.lembagaId}');
     try {
       final response = await http.get(url);
@@ -54,24 +55,24 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
           elevation: 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
+          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
           title: Text(
             widget.lembagaName,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -80,42 +81,42 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 8),
+                    margin: const EdgeInsets.only(left: 8),
                     width: 500,
                     height: 150,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Color.fromARGB(255, 217, 217, 217),
+                      color: const Color.fromARGB(255, 217, 217, 217),
                     ),
                     child: CachedNetworkImage(
-                      imageUrl: '${widget.logoUrl}',
+                      imageUrl: widget.logoUrl,
                       height: 16,
                       width: 16,
                       fit: BoxFit.contain,
                       placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     _lembagaDetail?['nama_lengkap'],
                     style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.pink[50],
+                      color: const Color.fromARGB(255, 217, 217, 217),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -124,12 +125,12 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: const Color.fromARGB(255, 217, 217, 217),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(

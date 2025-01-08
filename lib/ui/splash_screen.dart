@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'home.dart'; // Import halaman utama
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -15,10 +17,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    await Future.delayed(Duration(seconds: 3), () {});
+    await Future.delayed(const Duration(seconds: 3), () {});
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
     );
   }
 

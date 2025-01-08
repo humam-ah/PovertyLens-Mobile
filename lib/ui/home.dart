@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class HomeScreen extends StatefulWidget {
   final http.Client? httpClient;
 
-  HomeScreen({this.httpClient});
+  const HomeScreen({super.key, this.httpClient});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -37,28 +37,30 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator(
         key: _homeNavigatorKey,
         onGenerateRoute: (settings) {
-          if (settings.name == '/')
+          if (settings.name == '/') {
             return MaterialPageRoute(
                 builder: (context) => HomeScreenContent(
                       isLoading: _isLoading,
                       tahun: _tahun,
                       presentasePendudukMiskin: _presentasePendudukMiskin,
                     ));
-          if (settings.name == '/rekap_data')
-            return MaterialPageRoute(builder: (context) => RekapDataScreen());
+          }
+          if (settings.name == '/rekap_data') {
+            return MaterialPageRoute(builder: (context) => const RekapDataScreen());
+          }
           return null;
         },
       ),
       Navigator(
         key: _pindaiNavigatorKey,
         onGenerateRoute: (settings) {
-          return MaterialPageRoute(builder: (context) => PindaiScreen());
+          return MaterialPageRoute(builder: (context) => const PindaiScreen());
         },
       ),
       Navigator(
         key: _lembagaNavigatorKey,
         onGenerateRoute: (settings) {
-          return MaterialPageRoute(builder: (context) => LembagaScreen());
+          return MaterialPageRoute(builder: (context) => const LembagaScreen());
         },
       ),
     ]);
@@ -122,10 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ? null 
         : Container(
         height: 56,
-        margin: EdgeInsets.all(16),
-        decoration: BoxDecoration(
+        margin: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
           color: Color.fromARGB(255, 208, 232, 197),
-          borderRadius: const BorderRadius.only(
+          borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
               bottomLeft: Radius.circular(20),
@@ -207,7 +209,7 @@ class HomeScreenContent extends StatelessWidget {
   final List<String> tahun;
   final List<double> presentasePendudukMiskin;
 
-  HomeScreenContent({
+  const HomeScreenContent({super.key, 
     required this.isLoading,
     required this.tahun,
     required this.presentasePendudukMiskin,
@@ -217,17 +219,17 @@ class HomeScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(125.0),
+        preferredSize: const Size.fromHeight(125.0),
         child: AppBar(
             toolbarHeight: 125.0,
             automaticallyImplyLeading: false,
             flexibleSpace: Container(),
             elevation: 0,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(
               bottom: Radius.circular(24),
             )),
-            backgroundColor: Color.fromARGB(255, 208, 232, 197),
+            backgroundColor: const Color.fromARGB(255, 208, 232, 197),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -241,15 +243,15 @@ class HomeScreenContent extends StatelessWidget {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'PovertyLens',
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
                   child: Text(
                     'Hai, Selamat Datang Povers!',
                     style: TextStyle(
@@ -266,14 +268,14 @@ class HomeScreenContent extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RekapDataScreen()));
+                        builder: (context) => const RekapDataScreen()));
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.insert_chart,
                     color: Colors.white,
                     size: 14,
                   ),
-                  label: Text(
+                  label: const Text(
                     "Rekap Data",
                     style: TextStyle(color: Colors.white, fontSize: 10),
                   ),
@@ -282,9 +284,9 @@ class HomeScreenContent extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      minimumSize: Size(100, 32),
+                      minimumSize: const Size(100, 32),
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
                 ),
               ),
             ]),
@@ -292,17 +294,17 @@ class HomeScreenContent extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(right: 4.0, left: 4.0, top: 0, bottom: 0),
+          padding: const EdgeInsets.only(right: 4.0, left: 4.0, top: 0, bottom: 0),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
                 height: 250,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                           color: Color.fromARGB(165, 244, 67, 54),
                           spreadRadius: 2,
@@ -319,18 +321,18 @@ class HomeScreenContent extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Grafik Presentase Penduduk Miskin',
+                          const Text(
+                            'Data Index Kemiskinan',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           SizedBox(
                             height: 150,
                             child: isLoading
-                                ? Center(child: CircularProgressIndicator())
+                                ? const Center(child: CircularProgressIndicator())
                                 : (tahun.isEmpty || presentasePendudukMiskin.isEmpty)
-                                    ? Center(
+                                    ? const Center(
                                         child: Text(
                                             'Tidak ada data untuk ditampilkan'))
                                     : BarChart(
@@ -358,12 +360,12 @@ class HomeScreenContent extends StatelessWidget {
                                                       tahun.length) {
                                                     return Text(tahun[value.toInt()]);
                                                   }
-                                                  return Text('');
+                                                  return const Text('');
                                                 },
                                               ),
                                             ),
                                           ),
-                                          gridData: FlGridData(show: true),
+                                          gridData: const FlGridData(show: true),
                                           barGroups: presentasePendudukMiskin
                                               .asMap()
                                               .entries
@@ -393,28 +395,28 @@ class HomeScreenContent extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 60,
               ),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 208, 232, 197),
+                      color: const Color.fromARGB(255, 208, 232, 197),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.3),
                           spreadRadius: 2,
                           blurRadius: 6,
-                          offset: Offset(2, 4),
+                          offset: const Offset(2, 4),
                         ),
                       ],
                     ),
-                    child: Column(
+                    child: const Column(
                       children: [
                         SizedBox(height: 20),
                         Text(
@@ -442,7 +444,7 @@ class HomeScreenContent extends StatelessWidget {
                               fit: BoxFit.contain,
                             ),
                           ),
-                          Text(
+                          const Text(
                             "PovertyLens",
                             style: TextStyle(
                               backgroundColor: Colors.white,
@@ -456,15 +458,15 @@ class HomeScreenContent extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -495,17 +497,17 @@ class HomeScreenContent extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

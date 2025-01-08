@@ -1,24 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:poverty_lens/ui/hasil_pindai.dart';
 import 'package:poverty_lens/ui/map.dart';
+import 'dart:convert';
 
-class PindaiScreen extends StatelessWidget {
+class PindaiScreen extends StatefulWidget {
+  const PindaiScreen({super.key});
+
+  @override
+  State<PindaiScreen> createState() => _PindaiScreenState();
+}
+
+class _PindaiScreenState extends State<PindaiScreen> {
+  String? _overlayImageBase64;
+  Map<String, double>? _percentages;
+  final TextEditingController _kelurahanController = TextEditingController();
+  final TextEditingController _kategoriController = TextEditingController();
+  final TextEditingController _laporanController = TextEditingController();
+
+  void _openMapScreen() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MapScreen(),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _overlayImageBase64 = result['overlay_image'];
+        _percentages = (result['percentages'] as Map)
+            .map((key, value) => MapEntry(key.toString(), value.toDouble()));
+        _kelurahanController.text = result['kelurahan'] ?? 'Tidak ditemukan';
+      });
+    }
+  }
+
+  void _submitData() {
+    if (_overlayImageBase64 == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Capture peta terlebih dahulu!')),
+      );
+      return;
+    }
+    // Lakukan submit data ke backend
+    print("Submit berhasil dengan data:");
+    print("Kelurahan: ${_kelurahanController.text}");
+    print("Kategori: ${_kategoriController.text}");
+    print("Laporan: ${_laporanController.text}");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
           elevation: 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          title: const Text(
             'Pindai Wilayah',
             style: TextStyle(
                 color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
@@ -38,66 +83,63 @@ class PindaiScreen extends StatelessWidget {
               ),
               child: Center(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
+                  onPressed: _openMapScreen,
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  child: const Text("Buka PovertyMap",),
+                ),
+              ),
+            ),
+            if (_overlayImageBase64 != null)
+              Column(
+                children: [
+                  const SizedBox(height: 16),
+                  Image.memory(
+                    base64Decode(_overlayImageBase64!),
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MapScreen(),
-                        fullscreenDialog:
-                            true, 
+                  const SizedBox(height: 16),
+                  if (_percentages != null)
+                    ..._percentages!.entries.map(
+                      (entry) => Text(
+                        "${entry.key}: ${entry.value.toStringAsFixed(2)}%",
+                        style: const TextStyle(fontSize: 16),
                       ),
-                    );
-                  },
-                  child: Text(
-                    'Buka PovertyMap',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                    ),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            _buildTextField('Kelurahan'),
-            SizedBox(height: 20),
-            _buildTextField('Bantuan yang dibutuhkan'),
-            SizedBox(height: 20),
+            const SizedBox(height: 16),
             TextField(
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: 'Tulis laporan Anda di sini..(Opsional)',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+              controller: _kelurahanController,
+              decoration: const InputDecoration(
+                labelText: "Kelurahan",
+                border: OutlineInputBorder(),
+              ),
+              readOnly: true,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _kategoriController,
+              decoration: const InputDecoration(
+                labelText: "Kategori Bantuan",
+                border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF455A64),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HasilPindaiScreen()));
-                },
-                child: Text(
-                  'Submit',
-                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _laporanController,
+              decoration: const InputDecoration(
+                labelText: "Laporan Anda",
+                border: OutlineInputBorder(),
               ),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _submitData,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+              child: const Text("Submit"),
             ),
           ],
         ),

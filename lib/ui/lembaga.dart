@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class LembagaScreen extends StatefulWidget {
   final http.Client? httpClient;
 
-  LembagaScreen({this.httpClient});
+  const LembagaScreen({super.key, this.httpClient});
 
   @override
   _LembagaScreenState createState() => _LembagaScreenState();
@@ -31,6 +31,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
 
   Future<void> _fetchLembagaData() async {
     final url = Uri.parse(
+        // 'http://127.0.0.1:5000/lembaga');
         'https://sound-prompt-crawdad.ngrok-free.app/lembaga'); 
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
@@ -71,10 +72,10 @@ class _LembagaScreenState extends State<LembagaScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Cari Lembaga'),
+          title: const Text('Cari Lembaga'),
           content: TextField(
             controller: _searchController,
-            decoration: InputDecoration(hintText: 'Masukkan nama lembaga'),
+            decoration: const InputDecoration(hintText: 'Masukkan nama lembaga'),
             onChanged: (query) => _filterLembaga(query),
           ),
           actions: [
@@ -84,13 +85,13 @@ class _LembagaScreenState extends State<LembagaScreen> {
                 _filterLembaga('');
                 Navigator.pop(context);
               },
-              child: Text('Batal'),
+              child: const Text('Batal'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cari'),
+              child: const Text('Cari'),
             ),
           ],
         );
@@ -102,18 +103,18 @@ class _LembagaScreenState extends State<LembagaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
           elevation: 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
-          title: Text(
+          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          title: const Text(
             'Daftar Lembaga',
             style: TextStyle(
               color: Colors.black,
@@ -125,7 +126,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: IconButton(
-                icon: Icon(Icons.search, color: Colors.black),
+                icon: const Icon(Icons.search, color: Colors.black),
                 onPressed: _showSearchDialog,
               ),
             ),
@@ -133,7 +134,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.builder(
@@ -141,7 +142,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
                     crossAxisCount: 1,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 3,
+                    childAspectRatio: 5,
                   ),
                   itemCount: _filteredLembagaList.length,
                   itemBuilder: (context, index) {
@@ -167,10 +168,13 @@ class _LembagaScreenState extends State<LembagaScreen> {
                           child: Row(
                             children: [
                               Container(
-                                margin: EdgeInsets.only(left: 8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                   color: const Color.fromARGB(255, 217, 217, 217),
+                                ),
+                                margin: const EdgeInsets.only(left: 8),
                                 width: 60,
                                 height: 60,
-                                color: Color.fromARGB(255, 217, 217, 217),
                                 child: CachedNetworkImage(
                                   imageUrl:
                                     '${lembaga['logo_url']}',
@@ -179,21 +183,31 @@ class _LembagaScreenState extends State<LembagaScreen> {
                                   width: 16,
                                   fit: BoxFit.contain,
                                   placeholder: (context, url) =>
-                                      CircularProgressIndicator(),
+                                      const CircularProgressIndicator(),
                                   errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
+                                      const Icon(Icons.error),
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    const Padding(padding: EdgeInsets.only(top: 8.0, left: 8.0)),
                                     Text(
                                       lembaga['nama'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                       overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    const Text(
+                                      "selengkapnya",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal
+                                      ),
                                     ),
                                   ],
                                 ),
