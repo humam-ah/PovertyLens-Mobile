@@ -32,7 +32,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
   Future<void> _fetchLembagaData() async {
     final url = Uri.parse(
         // 'http://127.0.0.1:5000/lembaga');
-        'https://sound-prompt-crawdad.ngrok-free.app/lembaga'); 
+        'https://sound-prompt-crawdad.ngrok-free.app/api/lembaga'); 
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
 

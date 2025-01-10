@@ -30,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [];
 
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController ulasanController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       isLoading: _isLoading,
                       tahun: _tahun,
                       presentasePendudukMiskin: _presentasePendudukMiskin,
+                      emailController: emailController,
+                      ulasanController: ulasanController,
+                      submitForm: _submitForm,
                     ));
           }
           if (settings.name == '/rekap_data') {
@@ -66,6 +72,36 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
     _fetchKemiskinanData();
   }
+
+  Future<void> _submitForm() async {
+      final email = emailController.text.trim();
+      final ulasan = ulasanController.text.trim();
+
+      if (email.isEmpty || ulasan.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Semua field harus diisi!")),
+        );
+        return;
+      }
+
+      final url = Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/add_ulasan');
+      final response = await http.post(
+        url,
+        body: {'email': email, 'ulasan': ulasan},
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ulasan berhasil dikirim!")),
+        );
+        emailController.clear();
+        ulasanController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal mengirim ulasan!")),
+        );
+      }
+    }
 
   Future<void> _fetchKemiskinanData() async {
     final url = Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/api/data-kemiskinan');
@@ -115,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
+      backgroundColor: Colors.white,
       extendBody: true,
       body: IndexedStack(
         index: _selectedIndex,
@@ -143,16 +180,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex = 0;
                   });
                 },
+                iconSize: 30,
                 icon: _selectedIndex == 0
                     ? const Icon(
                         Icons.home_filled,
                         color: Colors.black,
-                        size: 30,
                       )
                     : const Icon(
                         Icons.home_outlined,
                         color: Colors.black,
-                        size: 30,
                       )),
             IconButton(
                 enableFeedback: false,
@@ -161,16 +197,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex = 1;
                   });
                 },
+                iconSize: 30,
                 icon: _selectedIndex == 1
                     ? const Icon(
                         Icons.search,
                         color: Colors.black,
-                        size: 30,
                       )
                     : const Icon(
                         Icons.search_outlined,
                         color: Colors.black,
-                        size: 30,
                       )),
             IconButton(
                 enableFeedback: false,
@@ -179,16 +214,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedIndex = 2;
                   });
                 },
+                iconSize: 30,
                 icon: _selectedIndex == 2
                     ? const Icon(
                         Icons.people,
                         color: Colors.black,
-                        size: 30,
                       )
                     : const Icon(
                         Icons.people,
                         color: Colors.black,
-                        size: 30,
                       )),
           ],
         ),
@@ -197,27 +231,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-final List<String> imageUrls = [
-  'https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Slide+1',
-  'https://via.placeholder.com/600x400/33FF57/FFFFFF?text=Slide+2',
-  'https://via.placeholder.com/600x400/3357FF/FFFFFF?text=Slide+3',
-  'https://via.placeholder.com/600x400/FF33A1/FFFFFF?text=Slide+4',
-];
-
 class HomeScreenContent extends StatelessWidget {
   final bool isLoading;
   final List<String> tahun;
   final List<double> presentasePendudukMiskin;
+  final TextEditingController emailController;
+  final TextEditingController ulasanController;
+  final Future<void> Function() submitForm;
 
   const HomeScreenContent({super.key, 
     required this.isLoading,
     required this.tahun,
     required this.presentasePendudukMiskin,
+    required this.emailController,
+    required this.ulasanController,
+    required this.submitForm,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(125.0),
         child: AppBar(
@@ -479,7 +513,7 @@ class HomeScreenContent extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Fitur uta  ma dari Poverty Lens adalah kemampuan untuk mengunggah gambar tangkapan layar (screenshot) peta atau maps yang disertai dengan teks pertanyaan dari pengguna. Fitur ini memanfaatkan teknologi kecerdasan buatan (AI) untuk menganalisis peta atau gambar yang diunggah dan menjawab pertanyaan yang diajukan.',
+                      'Fitur utama dari Poverty Lens adalah kemampuan untuk mengunggah gambar tangkapan layar (screenshot) peta atau maps yang disertai dengan teks pertanyaan dari pengguna. Fitur ini memanfaatkan teknologi kecerdasan buatan (AI) untuk menganalisis peta atau gambar yang diunggah dan menjawab pertanyaan yang diajukan.',
                       style: TextStyle(color: Colors.black54),
                     ),
                     SizedBox(
@@ -500,35 +534,60 @@ class HomeScreenContent extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
+              //Komentar Pengguna
               Container(
                 padding: const EdgeInsets.all(16.0),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Cara Pakai Fitur AI PovertyLens',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      '1. Siapkan screenshot peta atau maps yang ingin kamu tanyakan.\n'
-                      '2. Upload file screenshot dan ketik pertanyaanmu di kolom yang tersedia.\n'
-                      '3. Setelah itu, AI kita yang super canggih akan langsung menganalisis pertanyaanmu!\n'
-                      '4. Kamu tinggal duduk manis sambil nunggu jawabannya keluar.\n'
-                      '5. Selamat mencoba dari Mimin Ganteng!',
-                      style: TextStyle(color: Color(0xFFC95B1B)),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 6,
+                      offset: const Offset(2, 4),
                     ),
                   ],
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Tinggalkan Komentar Anda',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: ulasanController,
+                      decoration: const InputDecoration(
+                        labelText: 'Komentar',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: submitForm,
+                      child: const Text('Kirim'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 64,
               ),
             ],
           ),

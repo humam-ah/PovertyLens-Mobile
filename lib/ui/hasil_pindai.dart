@@ -1,87 +1,35 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class HasilPindaiScreen extends StatelessWidget {
-  const HasilPindaiScreen({super.key});
+  final String? imageBase64;
+  final Map<String, dynamic>? backendResult;
+
+  const HasilPindaiScreen({
+    Key? key,
+    required this.imageBase64,
+    required this.backendResult,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          toolbarHeight: 60,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(),
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(24),
-            )
-          ),
-          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
-          title: const Text(
-            'PovertyAnswer',
-            style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+      appBar: AppBar(
+        title: Text("Hasil Pindai"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            backendResult != null
+                ? Image.memory(
+                    base64Decode(backendResult?["overlay_image"]),
+                    fit: BoxFit.cover,
+                  )
+                : Text("Tidak ada hasil dari backend"),
+          ],
         ),
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [ 
-              Container(
-                width: double.infinity,
-                height: 250,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(12),
-                  image: const DecorationImage(
-                    image: AssetImage('images/map.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: const Offset(2, 4),
-                    ),
-                  ],
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Vestibulum ut tortor ut purus volutpat cursus. Phasellus sed dictum orci. Mauris non interdum nunc. Suspendisse varius purus justo, at ullamcorper nulla tempor nec. Praesent aliquam eu justo nec fermentum.',
-                      style: TextStyle(color: Colors.black54),
-                      textAlign: TextAlign.justify,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'Sed volutpat faucibus diam, id interdum tortor tristique ac. Nulla facilisi. Ut tincidunt ligula in purus suscipit, vel volutpat ipsum varius. Proin vel lectus euismod, convallis leo ut, ullamcorper purus.',
-                      style: TextStyle(color: Colors.black54),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
     );
   }
 }

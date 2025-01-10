@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poverty_lens/ui/hasil_pindai.dart';
 import 'package:poverty_lens/ui/map.dart';
 import 'dart:convert';
 
@@ -11,6 +12,7 @@ class PindaiScreen extends StatefulWidget {
 
 class _PindaiScreenState extends State<PindaiScreen> {
   String? _overlayImageBase64;
+  Map<String, dynamic>? _backendResult;
   Map<String, double>? _percentages;
   final TextEditingController _kelurahanController = TextEditingController();
   final TextEditingController _kategoriController = TextEditingController();
@@ -20,18 +22,23 @@ class _PindaiScreenState extends State<PindaiScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const MapScreen(),
+        builder: (context) => MapScreen(),
       ),
     );
 
     if (result != null) {
       setState(() {
-        _overlayImageBase64 = result['overlay_image'];
-        _percentages = (result['percentages'] as Map)
-            .map((key, value) => MapEntry(key.toString(), value.toDouble()));
-        _kelurahanController.text = result['kelurahan'] ?? 'Tidak ditemukan';
+        _overlayImageBase64 = result['image'];
+        _backendResult = result['result'];
       });
     }
+  }
+
+  void _resetCapture() {
+    setState(() {
+      _overlayImageBase64 = null;
+      _backendResult = null;
+    });
   }
 
   void _submitData() {
@@ -40,12 +47,17 @@ class _PindaiScreenState extends State<PindaiScreen> {
         const SnackBar(content: Text('Capture peta terlebih dahulu!')),
       );
       return;
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HasilPindaiScreen(
+            imageBase64: _overlayImageBase64,
+            backendResult: _backendResult,
+          ),
+        ),
+      );
     }
-    // Lakukan submit data ke backend
-    print("Submit berhasil dengan data:");
-    print("Kelurahan: ${_kelurahanController.text}");
-    print("Kategori: ${_kategoriController.text}");
-    print("Laporan: ${_laporanController.text}");
   }
 
   @override
@@ -66,7 +78,8 @@ class _PindaiScreenState extends State<PindaiScreen> {
           title: const Text(
             'Pindai Wilayah',
             style: TextStyle(
-                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold, 
+              ),
           ),
         ),
       ),
@@ -76,45 +89,54 @@ class _PindaiScreenState extends State<PindaiScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 200,
+              height: 300,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black54),
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: _openMapScreen,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  child: const Text("Buka PovertyMap",),
+              child: _overlayImageBase64 != null
+                  ? Stack(
+                      children: [
+                        Image.memory(
+                          base64Decode(_overlayImageBase64!),
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: IconButton(
+                            icon: Icon(Icons.refresh, color: Colors.red),
+                            onPressed: _resetCapture,
+                          ),
+                        ),
+                      ],
+                    )
+                  :
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _openMapScreen,
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                      child: const Text(
+                        "Buka PovertyMap",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 208, 232, 197)
+                    ),
+                  ),
                 ),
               ),
             ),
-            if (_overlayImageBase64 != null)
-              Column(
-                children: [
-                  const SizedBox(height: 16),
-                  Image.memory(
-                    base64Decode(_overlayImageBase64!),
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  const SizedBox(height: 16),
-                  if (_percentages != null)
-                    ..._percentages!.entries.map(
-                      (entry) => Text(
-                        "${entry.key}: ${entry.value.toStringAsFixed(2)}%",
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                ],
-              ),
             const SizedBox(height: 16),
             TextField(
               controller: _kelurahanController,
               decoration: const InputDecoration(
                 labelText: "Kelurahan",
-                border: OutlineInputBorder(),
+                floatingLabelStyle: TextStyle(color: Color.fromARGB(255, 208, 232, 197)),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
               ),
               readOnly: true,
             ),
@@ -123,7 +145,13 @@ class _PindaiScreenState extends State<PindaiScreen> {
               controller: _kategoriController,
               decoration: const InputDecoration(
                 labelText: "Kategori Bantuan",
-                border: OutlineInputBorder(),
+                floatingLabelStyle: TextStyle(color: Color.fromARGB(255, 208, 232, 197)),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -131,7 +159,13 @@ class _PindaiScreenState extends State<PindaiScreen> {
               controller: _laporanController,
               decoration: const InputDecoration(
                 labelText: "Laporan Anda",
-                border: OutlineInputBorder(),
+                floatingLabelStyle: TextStyle(color: Color.fromARGB(255, 208, 232, 197)),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 208, 232, 197))
+                ),
               ),
               maxLines: 3,
             ),
@@ -139,8 +173,14 @@ class _PindaiScreenState extends State<PindaiScreen> {
             ElevatedButton(
               onPressed: _submitData,
               style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              child: const Text("Submit"),
+              child: const Text(
+                "Submit",
+                style: TextStyle(
+                  color: Color.fromARGB(255, 208, 232, 197)
+                ),
+              ),
             ),
+            SizedBox(height: 16,)
           ],
         ),
       ),

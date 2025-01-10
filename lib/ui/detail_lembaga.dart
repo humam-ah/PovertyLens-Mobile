@@ -32,7 +32,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
         'Memuat detail untuk lembaga ID: ${widget.lembagaId}'); // Log ID lembaga
     final url =
         // Uri.parse('http://127.0.0.1:5000/detail-lembaga/${widget.lembagaId}');
-        Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/detail-lembaga/${widget.lembagaId}');
+        Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/api/detail-lembaga/${widget.lembagaId}');
     try {
       final response = await http.get(url);
       print('Request URL: $url');
