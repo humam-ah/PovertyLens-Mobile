@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:poverty_lens/ui/chatbot.dart';
 import 'package:poverty_lens/ui/pindai.dart';
 import 'lembaga.dart';
 import 'rekap_data.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey<NavigatorState> _homeNavigatorKey =
       GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _chatbotNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _pindaiNavigatorKey =
       GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _lembagaNavigatorKey =
@@ -55,6 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
             return MaterialPageRoute(builder: (context) => const RekapDataScreen());
           }
           return null;
+        },
+      ),
+      Navigator(
+        key: _chatbotNavigatorKey,
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(builder: (context) => ChatPage());
         },
       ),
       Navigator(
@@ -140,8 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (index == 0) {
         _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
       } else if (index == 1) {
-        _pindaiNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+        _chatbotNavigatorKey.currentState?.popUntil((route) => route.isFirst);
       } else if (index == 2) {
+        _pindaiNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      } else if (index == 3) {
         _lembagaNavigatorKey.currentState?.popUntil((route) => route.isFirst);
       }
     });
@@ -200,11 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 iconSize: 30,
                 icon: _selectedIndex == 1
                     ? const Icon(
-                        Icons.search,
+                        Icons.message,
                         color: Colors.black,
                       )
                     : const Icon(
-                        Icons.search_outlined,
+                        Icons.message_outlined,
                         color: Colors.black,
                       )),
             IconButton(
@@ -216,6 +226,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 iconSize: 30,
                 icon: _selectedIndex == 2
+                    ? const Icon(
+                        Icons.search,
+                        color: Colors.black,
+                      )
+                    : const Icon(
+                        Icons.search_outlined,
+                        color: Colors.black,
+                      )),
+            IconButton(
+                enableFeedback: false,
+                onPressed: () {
+                  setState(() {
+                    _selectedIndex = 3;
+                  });
+                },
+                iconSize: 30,
+                icon: _selectedIndex == 3
                     ? const Icon(
                         Icons.people,
                         color: Colors.black,

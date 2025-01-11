@@ -1,3 +1,4 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "cmake.sourceDirectory": "D:/HUMAM/Kuliah/Semester 5-6/Kepston/mobile/poverty_lens/linux"
 }
