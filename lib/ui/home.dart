@@ -377,34 +377,35 @@ class HomeScreenContent extends StatelessWidget {
                 )
               ],
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const RekapDataScreen()));
-                  },
-                  icon: const Icon(
-                    Icons.insert_chart,
-                    color: Colors.white,
-                    size: 14,
-                  ),
-                  label: const Text(
-                    "Rekap Data",
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      minimumSize: const Size(100, 32),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8)),
-                ),
-              ),
-            ]),
+            // actions: [
+            //   Padding(
+            //     padding: const EdgeInsets.only(right: 16.0),
+            //     child: ElevatedButton.icon(
+            //       onPressed: () {
+            //         Navigator.of(context).push(MaterialPageRoute(
+            //             builder: (context) => const RekapDataScreen()));
+            //       },
+            //       icon: const Icon(
+            //         Icons.insert_chart,
+            //         color: Colors.white,
+            //         size: 14,
+            //       ),
+            //       label: const Text(
+            //         "Rekap Data",
+            //         style: TextStyle(color: Colors.white, fontSize: 10),
+            //       ),
+            //       style: ElevatedButton.styleFrom(
+            //           backgroundColor: Colors.pink,
+            //           shape: RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(24),
+            //           ),
+            //           minimumSize: const Size(100, 32),
+            //           padding: const EdgeInsets.symmetric(
+            //               horizontal: 10, vertical: 8)),
+            //     ),
+            //   ),
+            // ]
+          ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

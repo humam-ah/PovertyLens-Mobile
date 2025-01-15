@@ -142,7 +142,12 @@ class _PindaiScreenState extends State<PindaiScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _submitData,
-                child: const Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 255, 152, 0)),
+                child: const Text('Submit',
+                style: TextStyle(
+                            color: Colors.white,
+                          ),),
               ),
             ],
           ),

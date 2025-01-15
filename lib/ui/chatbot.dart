@@ -147,6 +147,7 @@ class _ChatPageState extends State<ChatPage> {
                       hintText: 'Type your message...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 141, 255, 183),)
                       ),
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     ),

@@ -83,10 +83,7 @@ class _RekapDataScreenState extends State<RekapDataScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
-          leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+          
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           flexibleSpace: Container(),
@@ -142,13 +139,14 @@ class _RekapDataScreenState extends State<RekapDataScreen> {
                 ElevatedButton(
                   onPressed: downloadCSV,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[300],
-                  ),
+                            backgroundColor: Color.fromARGB(255, 255, 152, 0)),
                   child: const Row(
                     children: [
-                      Icon(Icons.download, color: Colors.black),
+                      Icon(Icons.download, color: Colors.white),
                       SizedBox(width: 5),
-                      Text('Download', style: TextStyle(color: Colors.black)),
+                      Text('Download', style: TextStyle(
+                            color: Colors.white,
+                          ),),
                     ],
                   ),
                 ),
