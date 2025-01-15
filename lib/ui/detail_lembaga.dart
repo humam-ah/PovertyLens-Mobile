@@ -32,7 +32,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
         'Memuat detail untuk lembaga ID: ${widget.lembagaId}'); // Log ID lembaga
     final url =
         // Uri.parse('http://127.0.0.1:5000/detail-lembaga/${widget.lembagaId}');
-        Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/api/detail-lembaga/${widget.lembagaId}');
+        Uri.parse('https://povertylens.my.id/api/detail-lembaga/${widget.lembagaId}');
     try {
       final response = await http.get(url);
       print('Request URL: $url');
@@ -54,6 +54,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
@@ -69,7 +70,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          backgroundColor: const Color.fromARGB(255, 22, 163, 74),
           title: Text(
             widget.lembagaName,
             style: const TextStyle(
@@ -116,7 +117,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 217, 217, 217),
+                      color: const Color.fromARGB(255, 245, 245, 245),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -130,7 +131,7 @@ class _DetailLembagaScreenState extends State<DetailLembagaScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 217, 217, 217),
+                      color: const Color.fromARGB(255, 245, 245, 245),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(

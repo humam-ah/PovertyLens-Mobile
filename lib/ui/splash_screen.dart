@@ -30,9 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: const Color.fromARGB(255, 208, 232, 197),
       body: Center(
         child: SvgPicture.asset(
-          'images/logo.svg', 
-          width: 150, 
-          height: 150,
+          'assets/images/logo.svg', 
+          width: 100, 
+          height: 100,
           fit: BoxFit.contain,
         ),
       ),

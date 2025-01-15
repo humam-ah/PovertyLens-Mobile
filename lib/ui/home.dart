@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:poverty_lens/ui/chatbot.dart';
 import 'package:poverty_lens/ui/pindai.dart';
 import 'lembaga.dart';
@@ -24,10 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey<NavigatorState> _homeNavigatorKey =
       GlobalKey<NavigatorState>();
-  final GlobalKey<NavigatorState> _chatbotNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _chatbotNavigatorKey =
+      GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _pindaiNavigatorKey =
       GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> _lembagaNavigatorKey =
+      GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _rekapNavigatorKey =
       GlobalKey<NavigatorState>();
 
   final List<Widget> _pages = [];
@@ -54,7 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ));
           }
           if (settings.name == '/rekap_data') {
-            return MaterialPageRoute(builder: (context) => const RekapDataScreen());
+            return MaterialPageRoute(
+                builder: (context) => const RekapDataScreen());
           }
           return null;
         },
@@ -77,42 +82,50 @@ class _HomeScreenState extends State<HomeScreen> {
           return MaterialPageRoute(builder: (context) => const LembagaScreen());
         },
       ),
+      Navigator(
+        key: _rekapNavigatorKey,
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(
+              builder: (context) => const RekapDataScreen());
+        },
+      )
     ]);
     _fetchKemiskinanData();
   }
 
   Future<void> _submitForm() async {
-      final email = emailController.text.trim();
-      final ulasan = ulasanController.text.trim();
+    final email = emailController.text.trim();
+    final ulasan = ulasanController.text.trim();
 
-      if (email.isEmpty || ulasan.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Semua field harus diisi!")),
-        );
-        return;
-      }
-
-      final url = Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/add_ulasan');
-      final response = await http.post(
-        url,
-        body: {'email': email, 'ulasan': ulasan},
+    if (email.isEmpty || ulasan.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Semua field harus diisi!")),
       );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Ulasan berhasil dikirim!")),
-        );
-        emailController.clear();
-        ulasanController.clear();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Gagal mengirim ulasan!")),
-        );
-      }
+      return;
     }
 
+    final url =
+        Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/add_ulasan');
+    final response = await http.post(
+      url,
+      body: {'email': email, 'ulasan': ulasan},
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ulasan berhasil dikirim!")),
+      );
+      emailController.clear();
+      ulasanController.clear();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Gagal mengirim ulasan!")),
+      );
+    }
+  }
+
   Future<void> _fetchKemiskinanData() async {
-    final url = Uri.parse('https://sound-prompt-crawdad.ngrok-free.app/api/data-kemiskinan');
+    final url = Uri.parse('https://povertylens.my.id/api/data-kemiskinan');
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
 
@@ -153,13 +166,16 @@ class _HomeScreenState extends State<HomeScreen> {
         _pindaiNavigatorKey.currentState?.popUntil((route) => route.isFirst);
       } else if (index == 3) {
         _lembagaNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      } else if (index == 4) {
+        _rekapNavigatorKey.currentState?.popUntil((route) => route.isFirst);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
       backgroundColor: Colors.white,
       extendBody: true,
@@ -168,92 +184,129 @@ class _HomeScreenState extends State<HomeScreen> {
         children: _pages,
       ),
       bottomNavigationBar: isLandscape
-        ? null 
-        : Container(
-        height: 56,
-        margin: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 208, 232, 197),
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                },
-                iconSize: 30,
-                icon: _selectedIndex == 0
-                    ? const Icon(
-                        Icons.home_filled,
-                        color: Colors.black,
-                      )
-                    : const Icon(
-                        Icons.home_outlined,
-                        color: Colors.black,
-                      )),
-            IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                iconSize: 30,
-                icon: _selectedIndex == 1
-                    ? const Icon(
-                        Icons.message,
-                        color: Colors.black,
-                      )
-                    : const Icon(
-                        Icons.message_outlined,
-                        color: Colors.black,
-                      )),
-            IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 2;
-                  });
-                },
-                iconSize: 30,
-                icon: _selectedIndex == 2
-                    ? const Icon(
-                        Icons.search,
-                        color: Colors.black,
-                      )
-                    : const Icon(
-                        Icons.search_outlined,
-                        color: Colors.black,
-                      )),
-            IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 3;
-                  });
-                },
-                iconSize: 30,
-                icon: _selectedIndex == 3
-                    ? const Icon(
-                        Icons.people,
-                        color: Colors.black,
-                      )
-                    : const Icon(
-                        Icons.people,
-                        color: Colors.black,
-                      )),
-          ],
-        ),
-      ),
+          ? null
+          : Container(
+              height: 56,
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 22, 163, 74),
+                  borderRadius: BorderRadius.circular(45)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    key: Key("home-icon"),
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 0;
+                      });
+                    },
+                    iconSize: 28,
+                    icon: _selectedIndex == 0
+                        ? SvgPicture.asset(
+                            'assets/images/home.svg', // SVG ketika dipilih
+                            width: 28,
+                            height: 28,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/home.svg', // SVG ketika tidak dipilih
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                  ),
+                  IconButton(
+                    key: Key("chatbot-icon"),
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 1;
+                      });
+                    },
+                    iconSize: 28,
+                    icon: _selectedIndex == 1
+                        ? SvgPicture.asset(
+                            'assets/images/chatbot.svg', // SVG ketika dipilih
+                            width: 28,
+                            height: 28,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/chatbot.svg', // SVG ketika tidak dipilih
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                  ),
+                  IconButton(
+                    key: Key("pindai-icon"),
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                    iconSize: 28,
+                    icon: _selectedIndex == 2
+                        ? SvgPicture.asset(
+                            'assets/images/pindai.svg', // SVG ketika dipilih
+                            width: 28,
+                            height: 28,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/pindai.svg', // SVG ketika tidak dipilih
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                  ),
+                  IconButton(
+                    key: Key("lembaga-icon"),
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 3;
+                      });
+                    },
+                    iconSize: 28,
+                    icon: _selectedIndex == 3
+                        ? SvgPicture.asset(
+                            'assets/images/lembaga.svg', // SVG ketika dipilih
+                            width: 28,
+                            height: 28,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/lembaga.svg', // SVG ketika tidak dipilih
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                  ),
+                  IconButton(
+                    key: Key("rekap-icon"),
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        _selectedIndex = 4;
+                      });
+                    },
+                    iconSize: 28,
+                    icon: _selectedIndex == 4
+                        ? SvgPicture.asset(
+                            'assets/images/rekap.svg', // SVG ketika dipilih
+                            width: 28,
+                            height: 28,
+                          )
+                        : SvgPicture.asset(
+                            'assets/images/rekap.svg', // SVG ketika tidak dipilih
+                            width: 28,
+                            height: 28,
+                            color: Colors.white,
+                          ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }
@@ -266,7 +319,8 @@ class HomeScreenContent extends StatelessWidget {
   final TextEditingController ulasanController;
   final Future<void> Function() submitForm;
 
-  const HomeScreenContent({super.key, 
+  const HomeScreenContent({
+    super.key,
     required this.isLoading,
     required this.tahun,
     required this.presentasePendudukMiskin,
@@ -290,7 +344,7 @@ class HomeScreenContent extends StatelessWidget {
                 borderRadius: BorderRadius.vertical(
               bottom: Radius.circular(24),
             )),
-            backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+            backgroundColor: const Color.fromARGB(255, 22, 163, 74),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -346,8 +400,8 @@ class HomeScreenContent extends StatelessWidget {
                         borderRadius: BorderRadius.circular(24),
                       ),
                       minimumSize: const Size(100, 32),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8)),
                 ),
               ),
             ]),
@@ -355,13 +409,14 @@ class HomeScreenContent extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(right: 4.0, left: 4.0, top: 0, bottom: 0),
+          padding:
+              const EdgeInsets.only(right: 4.0, left: 4.0, top: 0, bottom: 0),
           child: Column(
             children: [
               const SizedBox(height: 20),
               Container(
                 width: double.infinity,
-                height: 250,
+                height: 305,
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8.0),
@@ -383,16 +438,25 @@ class HomeScreenContent extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            'Data Index Kemiskinan',
+                            'Persentase Penduduk Miskin',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 20, fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          const Text(
+                            'Kota Tegal',
+                            style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.pinkAccent 
+                            ),
                           ),
                           const SizedBox(height: 20),
                           SizedBox(
-                            height: 150,
+                            height: 175,
                             child: isLoading
-                                ? const Center(child: CircularProgressIndicator())
-                                : (tahun.isEmpty || presentasePendudukMiskin.isEmpty)
+                                ? const Center(
+                                    child: CircularProgressIndicator())
+                                : (tahun.isEmpty ||
+                                        presentasePendudukMiskin.isEmpty)
                                     ? const Center(
                                         child: Text(
                                             'Tidak ada data untuk ditampilkan'))
@@ -400,8 +464,9 @@ class HomeScreenContent extends StatelessWidget {
                                         BarChartData(
                                           alignment:
                                               BarChartAlignment.spaceAround,
-                                          maxY:
-                                              presentasePendudukMiskin.reduce((a, b) => a > b ? a : b) + 10, // Tambahkan margin pada sumbu Y
+                                          maxY: presentasePendudukMiskin.reduce(
+                                                  (a, b) => a > b ? a : b) +
+                                              3, // Tambahkan margin pada sumbu Y
                                           titlesData: FlTitlesData(
                                             leftTitles: AxisTitles(
                                               sideTitles: SideTitles(
@@ -419,14 +484,33 @@ class HomeScreenContent extends StatelessWidget {
                                                 getTitlesWidget: (value, meta) {
                                                   if (value.toInt() <
                                                       tahun.length) {
-                                                    return Text(tahun[value.toInt()]);
+                                                    return Transform.rotate(
+                                                      angle: -75 *
+                                                          3.14159265359 /
+                                                          180, // Rotasi -90 derajat
+                                                      child: Text(
+                                                        tahun[value.toInt()],
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(fontSize: 10),
+                                                      ),
+                                                    );
                                                   }
                                                   return const Text('');
                                                 },
                                               ),
                                             ),
+                                            topTitles: AxisTitles(
+                                              sideTitles:
+                                                  SideTitles(showTitles: false),
+                                            ),
+                                            rightTitles: AxisTitles(
+                                              sideTitles:
+                                                  SideTitles(showTitles: false),
+                                            ),
                                           ),
-                                          gridData: const FlGridData(show: true),
+                                          gridData:
+                                              const FlGridData(show: true),
                                           barGroups: presentasePendudukMiskin
                                               .asMap()
                                               .entries
@@ -439,7 +523,7 @@ class HomeScreenContent extends StatelessWidget {
                                                 BarChartRodData(
                                                   toY: value,
                                                   color: Colors.orange,
-                                                  width: 16,
+                                                  width: 8,
                                                   borderRadius:
                                                       BorderRadius.circular(4),
                                                 ),
@@ -459,65 +543,83 @@ class HomeScreenContent extends StatelessWidget {
               const SizedBox(
                 height: 60,
               ),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 208, 232, 197),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 6,
-                          offset: const Offset(2, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Column(
-                      children: [
-                        SizedBox(height: 20),
-                        Text(
-                          'Inisiatif teknologi untuk menganalisis dan memetakan kemiskinan, menggunakan data terkini dan alat visualisasi. Program ini membantu pemangku kepentingan dalam merancang intervensi yang tepat sasaran, dengan tujuan akhir menciptakan kesejahteraan dan keadilan bagi semua lapisan masyarakat.',
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: -30,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 30,
-                            child: Image.asset(
-                              'static/images/logo.png',
-                              width: 45,
-                              height: 45,
-                              fit: BoxFit.contain,
-                            ),
+              Container(
+                height: 400,
+                width: double.maxFinite,
+                child: Stack(
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                        width: double.maxFinite,
+                        height: double.maxFinite,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/img_subtract.png'),
+                            fit: BoxFit.fill,
                           ),
-                          const Text(
-                            "PovertyLens",
-                            style: TextStyle(
-                              backgroundColor: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: double.maxFinite,
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/logo.png",
+                                    height: 18,
+                                    width: 36,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    "PovertyLens",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
                             ),
-                          )
-                        ],
+                            SizedBox(
+                              height: 28,
+                            ),
+                            Container(
+                              height: 150,
+                              width: double.maxFinite,
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  image: DecorationImage(
+                                      image:
+                                          AssetImage("assets/images/img15.png"),
+                                      fit: BoxFit.fill)),
+                            ),
+                            SizedBox(
+                              height: 18,
+                            ),
+                            Container(
+                              width: double.maxFinite,
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                "Inisiatif teknologi untuk menganalisis dan memetakan kemiskinan, menggunakan data terkini dan alat visualisasi. Program ini membantu pemangku kepentingan dalam merancang intervensi yang tepat sasaran, dengan tujuan akhir menciptakan kesejahteraan dan keadilan bagi semua lapisan masyarakat.",
+                                maxLines: 8,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontWeight: FontWeight.normal),
+                                textAlign: TextAlign.justify,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    )
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
               Container(
@@ -607,9 +709,15 @@ class HomeScreenContent extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: submitForm,
-                      child: const Text('Kirim'),
-                    ),
+                        onPressed: submitForm,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 255, 152, 0)),
+                        child: const Text(
+                          'Kirim',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        )),
                   ],
                 ),
               ),

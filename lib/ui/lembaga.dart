@@ -31,7 +31,6 @@ class _LembagaScreenState extends State<LembagaScreen> {
 
   Future<void> _fetchLembagaData() async {
     final url = Uri.parse(
-        // 'http://127.0.0.1:5000/lembaga');
         'https://povertylens.my.id/api/lembaga'); 
     try {
       final response = await (widget.httpClient ?? http.Client()).get(url);
@@ -102,6 +101,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
@@ -113,7 +113,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: const Color.fromARGB(255, 208, 232, 197),
+          backgroundColor: const Color.fromARGB(255, 22, 163, 74),
           title: const Text(
             'Daftar Lembaga',
             style: TextStyle(
@@ -154,7 +154,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
                             builder: (context) => DetailLembagaScreen(
                               lembagaId: lembaga['id'].toString(),
                               lembagaName: lembaga['nama'],
-                              logoUrl: lembaga['logo_url'],
+                              logoUrl: 'https://povertylens.my.id${lembaga['logo_url']}',
                             ),
                           ),
                         );
@@ -177,8 +177,7 @@ class _LembagaScreenState extends State<LembagaScreen> {
                                 height: 60,
                                 child: CachedNetworkImage(
                                   imageUrl:
-                                    '${lembaga['logo_url']}',
-                                      // 'http://phbtegal.com:5013${lembaga['logo_url']}',
+                                    'https://povertylens.my.id${lembaga['logo_url']}',
                                   height: 16,
                                   width: 16,
                                   fit: BoxFit.contain,

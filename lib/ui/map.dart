@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
@@ -18,6 +16,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   GlobalKey _mapKey = GlobalKey();
+  LatLng _selectedLocation = LatLng(-6.858944, 109.147861);
 
   @override
   void initState() {
@@ -36,57 +35,70 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
-  Future<void> _captureMap() async {
+  Future<String> _getKelurahanFromCoordinates(LatLng location) async {
+    final url =
+        'https://nominatim.openstreetmap.org/reverse?lat=${location.latitude}&lon=${location.longitude}&format=json&addressdetails=1';
     try {
-      RenderRepaintBoundary boundary =
-          _mapKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-
-      if (boundary != null) {
-        ui.Image image = await boundary.toImage(
-            pixelRatio: 1.0); // Atur pixelRatio sesuai kebutuhan
-        ByteData? byteData =
-            await image.toByteData(format: ui.ImageByteFormat.png);
-        Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-        // Kirim gambar langsung ke backend
-        final result = await _sendImageToBackend(pngBytes);
-
-        // Navigasi kembali ke PindaiScreen dengan hasil capture
-        Navigator.pop(context, {
-          'image': base64Encode(pngBytes), // Kirim gambar sebagai Base64
-          'result': result,               // Kirim hasil dari backend jika ada
-        });
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final address = data['address'];
+        // Ambil nama kelurahan (atau bagian lainnya jika perlu)
+        String kelurahan = address['suburb'] ?? 'Kelurahan tidak ditemukan';
+        return kelurahan;
+      } else {
+        throw Exception("Failed to get location");
       }
     } catch (e) {
-      print('Error capturing map: $e');
+      print("Error getting kelurahan: $e");
+      return 'Kelurahan tidak ditemukan';
+    }
+  }
+
+  Future<void> _captureMap() async {
+    try {
+      // Tangkap gambar
+      RenderRepaintBoundary boundary =
+          _mapKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 1.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      String base64Image = "data:image/png;base64," + base64Encode(pngBytes);
+
+      // Kirim gambar ke backend
+      final result = await _sendImageToBackend(base64Image);
+
+      // Dummy kelurahan (dapat dihubungkan ke API geolokasi)
+      String kelurahan = await _getKelurahanFromCoordinates(_selectedLocation);
+
+      // Navigasi kembali dengan data
+      Navigator.pop(context, {
+        'image': base64Image,
+        'result': result,
+        'kelurahan': kelurahan,
+      });
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menangkap map')),
+        const SnackBar(content: Text('Gagal menangkap map')),
       );
     }
   }
 
-  Future<Map<String, dynamic>?> _sendImageToBackend(
-      Uint8List imageBytes) async {
-    final url =
-        Uri.parse("https://sound-prompt-crawdad.ngrok-free.app/process");
+  Future<Map<String, dynamic>?> _sendImageToBackend(String base64Image) async {
+    final url = Uri.parse("https://povertylens.my.id/process");
 
     try {
-      // Buat file sementara untuk dikirim
-      final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/temp_image.png';
-      final tempFile = File(filePath);
-      await tempFile.writeAsBytes(imageBytes);
-
-      // Kirim sebagai multipart request
-      final request = http.MultipartRequest('POST', url)
-        ..files.add(await http.MultipartFile.fromPath('image', tempFile.path));
-
-      final response = await request.send();
+      // Kirim data gambar sebagai form-data
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {'image': base64Image},
+      );
 
       if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final data = json.decode(responseBody);
-        return data; // Data hasil pemrosesan dari backend
+        final responseBody = json.decode(response.body);
+        return responseBody; // Data hasil pemrosesan dari backend
       } else {
         throw Exception("Gagal mengirim gambar: ${response.statusCode}");
       }
@@ -102,6 +114,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: AppBar(
@@ -117,7 +130,7 @@ class _MapScreenState extends State<MapScreen> {
               borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24),
           )),
-          backgroundColor: Color.fromARGB(255, 208, 232, 197),
+          backgroundColor: Color.fromARGB(255, 22, 163, 74),
           title: Text(
             'PovertyMaps',
             style: TextStyle(
