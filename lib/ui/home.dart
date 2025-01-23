@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                   ),
                   IconButton(
-                    key: Key("lembaga-icon"),
+                    key: Key('lembagaButton'),
                     enableFeedback: false,
                     onPressed: () {
                       setState(() {
@@ -359,7 +359,7 @@ class HomeScreenContent extends StatelessWidget {
                       ),
                     ),
                     const Text(
-                      'PovertyLens',
+                      'PovertyLens', key: Key('homeText'),
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),

@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('should add welcome message to the list', () {
+  test('Chatbot menambahkan welcome message ke list message', () {
     final messages = <Map<String, String>>[];
     final updatedMessages = addWelcomeMessage(messages);
 
